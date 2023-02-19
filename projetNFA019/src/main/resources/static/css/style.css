@@ -39,3 +39,12 @@
   width: 80px;
   background: grey;
 }
+.table-danger {
+  background-color: #ffcccc !important;
+}
+.text-danger {
+  color: red;
+}
+.expired {
+  background-color: red;
+}

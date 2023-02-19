@@ -6,7 +6,6 @@ import java.util.Date;
 
 @Entity
 @Table(name="Stocks")
-
 public class Stock {
     @Column(name="idStock")
     @Id
@@ -24,15 +23,19 @@ public class Stock {
     @ManyToOne
     @JoinColumn(name="idProduit")
     private Produit produit;
+    @ManyToOne
+    @JoinColumn(name="idUser")
+    private User user;
 
     public Stock() {
     }
 
-    public Stock(Date dateUtilisation, Date dateExpiration, Statut statut, Produit produit) {
+    public Stock(Date dateUtilisation, Date dateExpiration, Statut statut, Produit produit, User user) {
         this.dateUtilisation = dateUtilisation;
         this.dateExpiration = dateExpiration;
         this.statut = statut;
         this.produit = produit;
+        this.user = user;
     }
 
     public Integer getIdStock() {
@@ -75,6 +78,14 @@ public class Stock {
         this.produit = produit;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     @Override
     public String toString() {
         return "Stock{" +
@@ -83,6 +94,7 @@ public class Stock {
                 ", dateExpiration=" + dateExpiration +
                 ", statut=" + statut +
                 ", produit=" + produit +
+                ", user=" + user +
                 '}';
     }
 }

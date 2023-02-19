@@ -7,6 +7,7 @@ import com.cnam.demo.projetGestionRestau.entity.Categorie;
 import com.cnam.demo.projetGestionRestau.repository.CategorieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

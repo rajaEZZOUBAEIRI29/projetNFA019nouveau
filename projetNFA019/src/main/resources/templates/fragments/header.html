@@ -1,6 +1,6 @@
 <header th:fragment="header">
   <nav class="navbar navbar-expand-md bg-dark navbar-dark">
-    <a class="navbar-brand" th:href="@{/categories}">
+    <a class="navbar-brand" th:href="@{/accueil}">
       Accueil
     </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#topNavbar">
@@ -25,6 +25,12 @@
         </li>
         <li class="nav-item">
           <a class="nav-link" th:href="@{/stocks/new}">Add</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/users}">Utilisateurs</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/users/new}">Add</a>
         </li>
       </ul>
     </div>

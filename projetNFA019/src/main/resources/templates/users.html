@@ -4,7 +4,6 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0" />
   <title>CNAM - Gestion Restaurant</title>
-
   <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
   <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"  integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -14,7 +13,7 @@
 <body>
 <div th:replace="fragments/header :: header"></div>
 <div class="container-fluid" style="max-width: 900px; margin: 0 auto;">
-  <h2 class="text-center">Catégories</h2>
+  <h2 class="text-center">Users</h2>
   <div th:if="${message != null}" class="alert alert-success alert-dismissible fade show text-center message"  role="alert">
     [[${message}]]
     <button type="button" class="close btn-sm" data-dismiss="alert" aria-label="Close">
@@ -23,7 +22,7 @@
   </div>
   <!--  Formulaire de recherche -->
   <div class="my-3">
-    <form th:action="@{/categories}">
+    <form th:action="@{/users}">
       <div class="row d-flex">
         <div class="col-md-6 mt-2">
           <div class="search">
@@ -39,33 +38,38 @@
     </form>
   </div>
   <!-- variale inseree dans Modele depuis le controler -->
-  <div th:if="${categories.size() > 0}">
+  <div th:if="${users.size() > 0}">
     <table class="table table-hover table-responsive-xl">
       <thead class="thead-light">
       <tr>
         <th scope="col">Id</th>
-        <th scope="col">Nom categorie</th>
-        <th scope="col">Description</th>
+        <th scope="col">Email</th>
+        <th scope="col">Nom</th>
+        <th scope="col">Prenom</th>
+        <th scope="col">Role</th>
         <th scope="col">Actions</th>
       </tr>
       </thead>
       <tbody>
-      <tr th:each="categorie:${categories}">
-        <th scope="row">[[${categorie.idCategorie}]]</th>
-        <td>[[${categorie.nomCategorie}]]</td>
-        <td>[[${categorie.description}]]</td>
+      <tr th:each="user:${users}">
+        <th scope="row">[[${user.idUser}]]</th>
+        <td>[[${user.email}]]</td>
+        <td>[[${user.nom}]]</td>
+        <td>[[${user.prenom}]]</td>
+        <td>[[${user.role}]]</td>
+
         <td>
-          <a th:href="@{'/categories/'+ ${categorie.idCategorie}}" title="Edit this Categorie" class="fa-regular fa-pen-to-square icon-dark"></a>
+          <a th:href="@{'/users/'+ ${user.idUser}}" title="Edit this Categorie" class="fa-regular fa-pen-to-square icon-dark"></a>
           &nbsp;
-          <a th:href="@{'/categories/delete/'+ ${categorie.idCategorie}}" th:categorieTitle="${categorie.nomCategorie}" id="btnDelete"
-             title="Delete this Categorie" class="fa-regular fa-trash-can icon-dark btn-delete"></a>
+          <a th:href="@{'/users/delete/'+ ${user.idUser}}" th:userTitle="${user.nom}" id="btnDelete"
+             title="Delete this user" class="fa-regular fa-trash-can icon-dark btn-delete"></a>
         </td>
       </tr>
       </tbody>
     </table>
   </div>
-  <div class="" th:unless="${categories.size() > 0}">
-    <span>No categories found!</span>
+  <div class="" th:unless="${users.size() > 0}">
+    <span>No users found!</span>
   </div>
 </div>
 
@@ -94,15 +98,15 @@
     $(".btn-delete").on("click", function (e) {
       e.preventDefault();
       link = $(this);
-      categorieTitle = link.attr("categorieTitle");
+      userTitle = link.attr("userTitle");
       $("#yesBtn").attr("href", link.attr("href"));
-      $("#confirmText").html("Do you want to delete the categorie \<strong\>" + categorieTitle + "\<\/strong\>?");
+      $("#confirmText").html("Do you want to delete the user \<strong\>" + userTitle + "\<\/strong\>?");
       $("#confirmModal").modal();
     });
     $("#btnClear").on("click", function (e) {
       e.preventDefault();
       $("#keyword").text("");
-      window.location = "[[@{/categories}]]";
+      window.location = "[[@{/users}]]";
     });
   });
 </script>
