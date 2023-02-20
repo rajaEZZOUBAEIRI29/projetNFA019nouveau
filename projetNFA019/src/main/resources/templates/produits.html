@@ -45,7 +45,7 @@
                 <th scope="col">Nom produit</th>
                 <th scope="col">Duree conservation </th>
                 <th scope="col">Categorie </th>
-                <th scope="col">Actions</th>
+                <th scope="col" th:if="${#authorization.expression('!hasRole(''ROLE_USER'')')}">Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -54,7 +54,7 @@
                 <td>[[${produit.nomProduit}]]</td>
                 <td>[[${produit.DureeConservation}]]</td>
                 <td>[[${produit.categorie.nomCategorie}]]</td>
-                <td>
+                <td th:if="${#authorization.expression('!hasRole(''ROLE_USER'')')}">
                     <a th:href="@{'/produit/'+ ${produit.idProduit}}" title="Edit this Produit " class="fa-regular fa-pen-to-square icon-dark"></a>
                     &nbsp;
                     <a th:href="@{'/produit/delete/'+ ${produit.idProduit}}" th:produitTitle="${produit.nomProduit}" id="btnDelete"  title="Delete this Product" class="fa-regular fa-trash-can icon-dark btn-delete"></a>

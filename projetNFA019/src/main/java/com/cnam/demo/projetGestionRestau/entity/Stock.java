@@ -2,14 +2,17 @@ package com.cnam.demo.projetGestionRestau.entity;
 
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name="Stocks")
 public class Stock {
-    @Column(name="idStock")
+
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
+    @Column(name="idStock")
     private Integer idStock;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "dateUtilisation", nullable = false, updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
@@ -27,15 +30,21 @@ public class Stock {
     @JoinColumn(name="idUser")
     private User user;
 
+    @OneToMany(mappedBy = "stock")
+    private List<StockHistorique> historiques= new ArrayList<>();;
+
     public Stock() {
     }
 
-    public Stock(Date dateUtilisation, Date dateExpiration, Statut statut, Produit produit, User user) {
+    public Stock(Date dateUtilisation, Date dateExpiration,
+                 Statut statut, Produit produit, User user,
+                 List<StockHistorique> historiques) {
         this.dateUtilisation = dateUtilisation;
         this.dateExpiration = dateExpiration;
         this.statut = statut;
         this.produit = produit;
         this.user = user;
+        this.historiques = historiques;
     }
 
     public Integer getIdStock() {
@@ -86,6 +95,24 @@ public class Stock {
         this.user = user;
     }
 
+    public List<StockHistorique> getHistoriques() {
+        return historiques;
+    }
+
+    public void setHistoriques(List<StockHistorique> historiques) {
+        this.historiques = historiques;
+    }
+//rappeller
+    public void addHistorique(StockHistorique historique) {
+        this.historiques.add(historique);
+        historique.setStock(this);
+    }
+
+    public void removeHistorique(StockHistorique historique) {
+        this.historiques.remove(historique);
+        historique.setStock(null);
+    }
+
     @Override
     public String toString() {
         return "Stock{" +
@@ -95,6 +122,7 @@ public class Stock {
                 ", statut=" + statut +
                 ", produit=" + produit +
                 ", user=" + user +
+                ", historiques=" + historiques +
                 '}';
     }
 }

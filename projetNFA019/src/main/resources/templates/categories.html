@@ -46,7 +46,7 @@
         <th scope="col">Id</th>
         <th scope="col">Nom categorie</th>
         <th scope="col">Description</th>
-        <th scope="col">Actions</th>
+        <th scope="col" th:if="${#authorization.expression('!hasRole(''ROLE_USER'')')}">Actions</th>
       </tr>
       </thead>
       <tbody>
@@ -54,7 +54,7 @@
         <th scope="row">[[${categorie.idCategorie}]]</th>
         <td>[[${categorie.nomCategorie}]]</td>
         <td>[[${categorie.description}]]</td>
-        <td>
+        <td th:if="${#authorization.expression('!hasRole(''ROLE_USER'')')}">
           <a th:href="@{'/categories/'+ ${categorie.idCategorie}}" title="Edit this Categorie" class="fa-regular fa-pen-to-square icon-dark"></a>
           &nbsp;
           <a th:href="@{'/categories/delete/'+ ${categorie.idCategorie}}" th:categorieTitle="${categorie.nomCategorie}" id="btnDelete"

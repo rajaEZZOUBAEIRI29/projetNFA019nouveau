@@ -1,10 +1,8 @@
 package com.cnam.demo.projetGestionRestau.controller;
 
-import com.cnam.demo.projetGestionRestau.entity.Produit;
-import com.cnam.demo.projetGestionRestau.entity.Statut;
-import com.cnam.demo.projetGestionRestau.entity.Stock;
-import com.cnam.demo.projetGestionRestau.entity.User;
+import com.cnam.demo.projetGestionRestau.entity.*;
 import com.cnam.demo.projetGestionRestau.repository.ProduitRepository;
+import com.cnam.demo.projetGestionRestau.repository.StockHistoriqueRepository;
 import com.cnam.demo.projetGestionRestau.repository.StockRepository;
 import com.cnam.demo.projetGestionRestau.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -29,6 +28,8 @@ public class StockController {
     private StockRepository stockRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private StockHistoriqueRepository stockHistoriqueRepository;
 
     @GetMapping("/stocks")
     public String getAllStocks(Model model,
@@ -81,6 +82,7 @@ public class StockController {
     @PostMapping("/saveStock")
     public String saveStock(@ModelAttribute("stock") Stock stock,
                             @RequestParam("idProduit") Integer idProduit,
+                            @RequestParam(name = "typeAction", required = false) String typeAction,
                             Model model, Authentication authentication) {
         Produit produit = produitRepository.findById(idProduit).orElse(null);
 
@@ -101,29 +103,24 @@ public class StockController {
         stockRepository.save(stock);
         model.addAttribute("produit", produit);
         model.addAttribute("stock", stock);
+
+        // créer un objet StockHistorique pour enregistrer l'action
+        StockHistorique stockHistorique = new StockHistorique();
+        stockHistorique.setDateAction(new Date());
+        stockHistorique.setTypeAction(typeAction);
+        stockHistorique.setStatut(stock.getStatut());
+        stockHistorique.setTypeAction("ajouter");
+        stockHistorique.setStock(stock);
+
+        // sauvegarder l'historique dans la base de données
+        stockHistoriqueRepository.save(stockHistorique);
+
         return "redirect:/stocks";
     }
 
-//    @GetMapping("/stock/{id}")
-//    public String editProduit(@PathVariable("id") Integer id,
-//                              Model model,
-//                              RedirectAttributes redirectAttributes) {
-//        try {
-//
-//            List<Produit> produits = new ArrayList<>();
-//            produits = produitRepository.findAll();
-//            Stock stock = stockRepository.findById(id).get();
-//            model.addAttribute("stock", stock);
-//            model.addAttribute("produits", produits);
-//            model.addAttribute("pageNomStock", "Edit produit (ID: " + id + ")");
-//            return "stock_edit";
-//        } catch (Exception e) {
-//            redirectAttributes.addFlashAttribute("message", e.getMessage());
-//            return "redirect:/stocks";
-//        }
-//    }
 @GetMapping("/stock/{id}")
-public String editProduit(@PathVariable("id") Integer id,
+public String editStock(@PathVariable("id") Integer id,
+                          @RequestParam(name = "typeAction", required = false) String typeAction,
                           Model model,
                           RedirectAttributes redirectAttributes) {
     try {
@@ -149,13 +146,39 @@ public String editProduit(@PathVariable("id") Integer id,
         if (stock.getDateExpiration().before(new Date())) {
             stock.setStatut(Statut.EXPIRE);
             stockRepository.save(stock);
-            return "redirect:/stocks";
-        }
 
-        model.addAttribute("stock", stock);
-        model.addAttribute("produits", produits);
-        model.addAttribute("pageNomStock", "Edit produit (ID: " + id + ")");
-        return "stock_edit";
+            // créer un objet StockHistorique pour enregistrer l'action
+            StockHistorique stockHistorique = new StockHistorique();
+            stockHistorique.setDateAction(new Date());
+            stockHistorique.setTypeAction(typeAction);
+            stockHistorique.setStatut(stock.getStatut());
+            stockHistorique.setTypeAction("editer ");
+            stockHistorique.setStock(stock);
+
+            // sauvegarder l'historique dans la base de données
+            stockHistoriqueRepository.save(stockHistorique);
+
+            return "redirect:/stocks";
+        } else {
+            stock.setStatut(Statut.CONSOMME);
+            stockRepository.save(stock);
+
+            // créer un objet StockHistorique pour enregistrer l'action
+            StockHistorique stockHistorique = new StockHistorique();
+            stockHistorique.setDateAction(new Date());
+            stockHistorique.setTypeAction(typeAction);
+            stockHistorique.setStatut(stock.getStatut());
+            stockHistorique.setTypeAction("editer");
+            stockHistorique.setStock(stock);
+
+            // sauvegarder l'historique dans la base de données
+            stockHistoriqueRepository.save(stockHistorique);
+
+            model.addAttribute("stock", stock);
+            model.addAttribute("produits", produits);
+            model.addAttribute("pageNomStock", "Edit produit (ID: " + id + ")");
+            return "redirect:/stocks";
+    }
 
     } catch (Exception e) {
         redirectAttributes.addFlashAttribute("message", e.getMessage());
@@ -163,19 +186,45 @@ public String editProduit(@PathVariable("id") Integer id,
     return "redirect:/stocks";
 }
 
-    @GetMapping("/update-stock-status")
-    public ResponseEntity<String> updateStockStatus() {
-        List<Stock> expiredProducts= stockRepository.findAll();
-        for (Stock produitStock : expiredProducts) {
-            if (produitStock.getDateExpiration().before(new Date())) {
-                produitStock.setStatut(Statut.EXPIRE);
-                stockRepository.save(produitStock);
-            }
-        }
-        return new ResponseEntity<>("Statut de stock mis à jour avec succès", HttpStatus.OK);
-    }
     @GetMapping("/stock/delete/{id}")
+    public String deleteStock(@PathVariable("id") Integer id,
+                                @RequestParam(name = "typeAction", required = false) String typeAction,
+                                RedirectAttributes redirectAttributes) {
+        try {
+            // Trouver le stock à supprimer
+            Stock stock = stockRepository.findById(id).orElse(null);
+
+            // Si le stock n'existe pas, rediriger vers la liste des stocks avec un message d'erreur
+            if (stock == null) {
+                redirectAttributes.addFlashAttribute("message", "Stock with id=" + id + " not found");
+                return "redirect:/stocks";
+            }
+
+            // Créer un nouvel objet StockHistorique pour l'action de suppression
+            StockHistorique stockHistorique = new StockHistorique();
+            stockHistorique.setDateAction(new Date());
+            stockHistorique.setTypeAction("supprimer");
+            stockHistorique.setStatut(stock.getStatut());
+            stockHistorique.setStock(stock);
+
+            // Ajouter l'objet StockHistorique à la liste historiques du Stock
+            stock.getHistoriques().add(stockHistorique);
+
+            // Supprimer le Stock de la base de données
+            stockRepository.delete(stock);
+
+            redirectAttributes.addFlashAttribute("message", "Le stock avec l'ID=" + id + " a été supprimé avec succès!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("message", e.getMessage());
+        }
+        return "redirect:/stocks";
+    }
+
+
+
+ /*   @GetMapping("/stock/delete/{id}")
     public String deleteProduit(@PathVariable("id") Integer id,
+                                @RequestParam(name = "typeAction", required = false) String typeAction,
                                 RedirectAttributes redirectAttributes) {
         try {
             stockRepository.deleteById(id);
@@ -184,5 +233,5 @@ public String editProduit(@PathVariable("id") Integer id,
             redirectAttributes.addFlashAttribute("message", e.getMessage());
         }
         return "redirect:/stocks";
-    }
+    }*/
 }
