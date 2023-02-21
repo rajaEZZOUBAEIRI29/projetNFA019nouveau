@@ -1,5 +1,7 @@
 package com.cnam.demo.projetGestionRestau.entity;
 
+import org.hibernate.annotations.Cascade;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -24,8 +26,8 @@ public class StockHistorique {
     @Enumerated(EnumType.STRING)
     private Statut statut;
 
-    @ManyToOne
-    @JoinColumn(name="idStock")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(name="idStock", nullable = false)
     private Stock stock;
 
     public StockHistorique() {

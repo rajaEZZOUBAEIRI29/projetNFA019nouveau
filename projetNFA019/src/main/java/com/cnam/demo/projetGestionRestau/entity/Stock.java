@@ -30,7 +30,7 @@ public class Stock {
     @JoinColumn(name="idUser")
     private User user;
 
-    @OneToMany(mappedBy = "stock")
+    @OneToMany(mappedBy = "stock", cascade = CascadeType.REMOVE)
     private List<StockHistorique> historiques= new ArrayList<>();;
 
     public Stock() {
@@ -103,7 +103,7 @@ public class Stock {
         this.historiques = historiques;
     }
 //rappeller
-    public void addHistorique(StockHistorique historique) {
+    /*public void addHistorique(StockHistorique historique) {
         this.historiques.add(historique);
         historique.setStock(this);
     }
@@ -112,7 +112,7 @@ public class Stock {
         this.historiques.remove(historique);
         historique.setStock(null);
     }
-
+*/
     @Override
     public String toString() {
         return "Stock{" +

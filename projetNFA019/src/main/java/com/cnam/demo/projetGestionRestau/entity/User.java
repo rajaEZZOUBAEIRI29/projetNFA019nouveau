@@ -32,6 +32,9 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Stock> stocks;
 
+    @OneToMany(mappedBy = "user")
+    private List<Temperature> temperatures;
+
     public User() {
     }
 

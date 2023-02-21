@@ -14,7 +14,7 @@
 <body>
 <div th:replace="fragments/header :: header"></div>
 <div class="container-fluid" style="max-width: 900px; margin: 0 auto;">
-  <h2 class="text-center">Catégories</h2>
+  <h2 class="text-center">Frigos</h2>
   <div th:if="${message != null}" class="alert alert-success alert-dismissible fade show text-center message"  role="alert">
     [[${message}]]
     <button type="button" class="close btn-sm" data-dismiss="alert" aria-label="Close">
@@ -23,7 +23,7 @@
   </div>
   <!--  Formulaire de recherche -->
   <div class="my-3">
-    <form th:action="@{/categories}">
+    <form th:action="@{/frigos}">
       <div class="row d-flex">
         <div class="col-md-6 mt-2">
           <div class="search">
@@ -39,33 +39,35 @@
     </form>
   </div>
   <!-- variale inseree dans Modele depuis le controler -->
-  <div th:if="${categories.size() > 0}">
+  <div th:if="${frigos.size() > 0}">
     <table class="table table-hover table-responsive-xl">
       <thead class="thead-light">
       <tr>
         <th scope="col">Id</th>
-        <th scope="col">Nom categorie</th>
-        <th scope="col">Description</th>
-        <th scope="col" th:if="${#authorization.expression('!hasRole(''ROLE_USER'')')}">Actions</th>
+        <th scope="col">Nom frigo</th>
+        <th scope="col">Temperature Min Autorise </th>
+        <th scope="col">Temperature Max Autorise </th>
+        <th scope="col" >Actions</th>
       </tr>
       </thead>
       <tbody>
-      <tr th:each="categorie:${categories}">
-        <th scope="row">[[${categorie.idCategorie}]]</th>
-        <td>[[${categorie.nomCategorie}]]</td>
-        <td>[[${categorie.description}]]</td>
-        <td th:if="${#authorization.expression('!hasRole(''ROLE_USER'')')}">
-          <a th:href="@{'/categories/'+ ${categorie.idCategorie}}" title="Edit this Categorie" class="fa-regular fa-pen-to-square icon-dark"></a>
+      <tr th:each="frigo:${frigos}">
+        <th scope="row">[[${frigo.idFrigo}]]</th>
+        <td>[[${frigo.nomFrigo}]]</td>
+        <td>[[${frigo.temperatureMinAutorise}]]</td>
+        <td>[[${frigo.temperatureMaxAutorise}]]</td>
+        <td >
+          <a th:href="@{'/frigos/'+ ${frigo.idFrigo}}" title="Edit this Frigo" class="fa-regular fa-pen-to-square icon-dark"></a>
           &nbsp;
-          <a th:href="@{'/categories/delete/'+ ${categorie.idCategorie}}" th:categorieTitle="${categorie.nomCategorie}" id="btnDelete"
-             title="Delete this Categorie" class="fa-regular fa-trash-can icon-dark btn-delete"></a>
+          <a th:href="@{'/frigos/delete/'+ ${frigo.idFrigo}}" th:categorieTitle="${frigo.nomFrigo}" id="btnDelete"
+             title="Delete this Frigo" class="fa-regular fa-trash-can icon-dark btn-delete"></a>
         </td>
       </tr>
       </tbody>
     </table>
   </div>
-  <div class="" th:unless="${categories.size() > 0}">
-    <span>No categories found!</span>
+  <div class="" th:unless="${frigos.size() > 0}">
+    <span>No frigos found!</span>
   </div>
 </div>
 
@@ -94,15 +96,15 @@
     $(".btn-delete").on("click", function (e) {
       e.preventDefault();
       link = $(this);
-      categorieTitle = link.attr("categorieTitle");
+      frigoTitle = link.attr("frigoTitle");
       $("#yesBtn").attr("href", link.attr("href"));
-      $("#confirmText").html("Do you want to delete the categorie \<strong\>" + categorieTitle + "\<\/strong\>?");
+      $("#confirmText").html("Do you want to delete the frigo \<strong\>" + frigoTitle + "\<\/strong\>?");
       $("#confirmModal").modal();
     });
     $("#btnClear").on("click", function (e) {
       e.preventDefault();
       $("#keyword").text("");
-      window.location = "[[@{/categories}]]";
+      window.location = "[[@{/frigos}]]";
     });
   });
 </script>

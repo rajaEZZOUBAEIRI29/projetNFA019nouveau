@@ -28,6 +28,10 @@
             <table class="table table-hover table-responsive-xl">
                 <thead class="thead-light">
                 <tr>
+                    <th>Id Stock</th>
+
+                    <th>login</th>
+
                     <th>Date d'action</th>
                     <th>Type d'action</th>
                     <th>Statut</th>
@@ -36,6 +40,10 @@
                 <tbody>
                 <!-- Pour chaque StockHistorique dans la liste, créer une ligne dans le tableau -->
                 <tr th:each="stockHistorique : ${stockHistoriques}">
+                    <td th:text="${stockHistorique.stock.getIdStock()}"></td>
+
+                    <td th:text="${stockHistorique.stock.user.getEmail()}"></td>
+
                     <td th:text="${stockHistorique.dateAction}"></td>
                     <td th:text="${stockHistorique.typeAction}"></td>
                     <td th:text="${stockHistorique.statut}"></td>

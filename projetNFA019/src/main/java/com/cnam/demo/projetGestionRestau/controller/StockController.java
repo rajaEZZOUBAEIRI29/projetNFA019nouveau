@@ -6,19 +6,12 @@ import com.cnam.demo.projetGestionRestau.repository.StockHistoriqueRepository;
 import com.cnam.demo.projetGestionRestau.repository.StockRepository;
 import com.cnam.demo.projetGestionRestau.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Controller
 public class StockController {
@@ -73,9 +66,9 @@ public class StockController {
     stock.setStatut(Statut.EN_COURS);
 
         // Ajouter l'utilisateur connecté à l'objet Stock
-        String mail = authentication.getName();
-        User user = userRepository.findByEmail(mail);
-        stock.setUser(user);
+    String mail = authentication.getName();
+    User user = userRepository.findByEmail(mail);
+    stock.setUser(user);
 
     return "stock_form";
 }
@@ -86,6 +79,7 @@ public class StockController {
                             Model model, Authentication authentication) {
         Produit produit = produitRepository.findById(idProduit).orElse(null);
 
+        // save l'utilisateur connecté à l'objet Stock
         User user = userRepository.findByEmail(authentication.getName());
         stock.setUser(user);
 
@@ -152,16 +146,17 @@ public String editStock(@PathVariable("id") Integer id,
             stockHistorique.setDateAction(new Date());
             stockHistorique.setTypeAction(typeAction);
             stockHistorique.setStatut(stock.getStatut());
-            stockHistorique.setTypeAction("editer ");
+            stockHistorique.setTypeAction("editer");
             stockHistorique.setStock(stock);
 
             // sauvegarder l'historique dans la base de données
             stockHistoriqueRepository.save(stockHistorique);
 
+
             return "redirect:/stocks";
         } else {
-            stock.setStatut(Statut.CONSOMME);
-            stockRepository.save(stock);
+            //stock.setStatut(Statut.CONSOMME);
+            //stockRepository.save(stock);
 
             // créer un objet StockHistorique pour enregistrer l'action
             StockHistorique stockHistorique = new StockHistorique();
@@ -177,7 +172,7 @@ public String editStock(@PathVariable("id") Integer id,
             model.addAttribute("stock", stock);
             model.addAttribute("produits", produits);
             model.addAttribute("pageNomStock", "Edit produit (ID: " + id + ")");
-            return "redirect:/stocks";
+            return "stock_edit";
     }
 
     } catch (Exception e) {
@@ -185,45 +180,110 @@ public String editStock(@PathVariable("id") Integer id,
     }
     return "redirect:/stocks";
 }
-
     @GetMapping("/stock/delete/{id}")
     public String deleteStock(@PathVariable("id") Integer id,
-                                @RequestParam(name = "typeAction", required = false) String typeAction,
-                                RedirectAttributes redirectAttributes) {
-        try {
-            // Trouver le stock à supprimer
-            Stock stock = stockRepository.findById(id).orElse(null);
-
+                              RedirectAttributes redirectAttributes) {
+        // Vérifier si le stock existe dans la base de données
+        Optional<Stock> stock = stockRepository.findById(id);
+        if (!stock.isPresent()) {
             // Si le stock n'existe pas, rediriger vers la liste des stocks avec un message d'erreur
-            if (stock == null) {
-                redirectAttributes.addFlashAttribute("message", "Stock with id=" + id + " not found");
-                return "redirect:/stocks";
-            }
-
-            // Créer un nouvel objet StockHistorique pour l'action de suppression
-            StockHistorique stockHistorique = new StockHistorique();
-            stockHistorique.setDateAction(new Date());
-            stockHistorique.setTypeAction("supprimer");
-            stockHistorique.setStatut(stock.getStatut());
-            stockHistorique.setStock(stock);
-
-            // Ajouter l'objet StockHistorique à la liste historiques du Stock
-            stock.getHistoriques().add(stockHistorique);
-
-            // Supprimer le Stock de la base de données
-            stockRepository.delete(stock);
-
-            redirectAttributes.addFlashAttribute("message", "Le stock avec l'ID=" + id + " a été supprimé avec succès!");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("message", e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Le stock avec l'identifiant " + id + " n'existe pas.");
+            return "redirect:/stocks";
         }
+
+        // Créer une copie du stock pour enregistrer l'action de suppression dans l'historique
+        Stock stockToDelete = new Stock();
+        stockToDelete.setIdStock(stock.get().getIdStock());
+        stockToDelete.setStatut(stock.get().getStatut());
+
+        // Enregistrer l'action de suppression dans le tableau d'historique
+        StockHistorique stockHistorique = new StockHistorique();
+        stockHistorique.setDateAction(new Date());
+        stockHistorique.setTypeAction("supprimer");
+        stockHistorique.setStatut(stock.get().getStatut());
+        stockHistorique.setStock(stockToDelete);
+
+        // Supprimer le stock de la base de données
+        stockRepository.delete(stock.get());
+
+        // Rediriger l'utilisateur vers la liste des stocks avec un message de confirmation
+        redirectAttributes.addFlashAttribute("message", "Le stock avec l'identifiant " + id + " a été supprimé avec succès.");
         return "redirect:/stocks";
     }
 
 
+    /*@GetMapping("/stock/delete/{id}")
+    public String deleteStock(@PathVariable("id") Integer id,
+                              RedirectAttributes redirectAttributes) {
+        // Vérifier si le stock existe dans la base de données
+        Optional<Stock> stock = stockRepository.findById(id);
+        if (!stock.isPresent()) {
+            // Si le stock n'existe pas, rediriger vers la liste des stocks avec un message d'erreur
+            redirectAttributes.addFlashAttribute("error", "Le stock avec l'identifiant " + id + " n'existe pas.");
+            return "redirect:/stocks";
+        }
 
- /*   @GetMapping("/stock/delete/{id}")
-    public String deleteProduit(@PathVariable("id") Integer id,
+        // Créer une copie du stock pour enregistrer l'action de suppression dans l'historique
+        Stock stockToDelete = new Stock();
+        stockToDelete.setIdStock(stock.get().getIdStock());
+        stockToDelete.setStatut(stock.get().getStatut());
+
+        // Enregistrer l'action de suppression dans le tableau d'historique
+        StockHistorique stockHistorique = new StockHistorique();
+        stockHistorique.setDateAction(new Date());
+        stockHistorique.setTypeAction("supprimer");
+        stockHistorique.setStatut(stock.get().getStatut());
+        stockHistorique.setStock(stockToDelete);
+        stockHistoriqueRepository.save(stockHistorique);
+
+        // Supprimer le stock de la base de données
+        stockRepository.delete(stock.get());
+
+        // Rediriger l'utilisateur vers la liste des stocks avec un message de confirmation
+        redirectAttributes.addFlashAttribute("message", "Le stock avec l'identifiant " + id + " a été supprimé avec succès.");
+        return "redirect:/stocks";
+    }*/
+
+
+   /* @GetMapping("/stock/delete/{id}")
+    public String deleteStock(@PathVariable("id") Integer id,
+                              @RequestParam(name = "typeAction", required = false) String typeAction,
+                              RedirectAttributes redirectAttributes) {
+        Optional<Stock> stock = stockRepository.findById(id);
+
+        if (stock.isPresent()) {
+            // Supprimer toutes les entrées de la table d'historique de stock correspondant à ce stock
+             List<StockHistorique> stockHistoriques = stockHistoriqueRepository.findByStock(stock.get());
+
+            for (StockHistorique stockHistorique : stockHistoriques) {
+                stockHistoriqueRepository.delete(stockHistorique);
+                // Supprimer le stock du tableau stocks
+                stockRepository.delete(stock.get());
+                return "redirect:/stocks";
+            }
+            // Supprimer le stock du tableau stocks
+            stockRepository.delete(stock.get());
+
+            // Enregistrer l'action de suppression dans la table historique
+            StockHistorique stockHistorique = new StockHistorique();
+            stockHistorique.setDateAction(new Date());
+            stockHistorique.setTypeAction("supprimer");
+            stockHistorique.setStatut(stock.get().getStatut());
+            stockHistorique.setStock(stock.get());
+            stockHistoriqueRepository.save(stockHistorique);
+
+
+            // Rediriger l'utilisateur vers la liste des stocks avec un message de confirmation
+           redirectAttributes.addFlashAttribute("message", "Le stock avec l'identifiant " + id + " a été supprimé avec succès.");
+            return "redirect:/stocks";
+       } else {
+            redirectAttributes.addFlashAttribute("message", "Le stock avec l'identifiant " + id + " n'existe pas.");
+            return "redirect:/stocks";
+        }
+
+    }*/
+    /*@GetMapping("/stock/delete/{id}")
+    public String deleteStock(@PathVariable("id") Integer id,
                                 @RequestParam(name = "typeAction", required = false) String typeAction,
                                 RedirectAttributes redirectAttributes) {
         try {

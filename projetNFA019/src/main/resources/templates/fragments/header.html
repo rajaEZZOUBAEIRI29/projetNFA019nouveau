@@ -8,7 +8,9 @@
     </button>
     <div class="collapse navbar-collapse" id="topNavbar">
       <ul class="navbar-nav">
-
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/logout}">LogOut</a>
+        </li>
         <li class="nav-item">
           <a class="nav-link" th:href="@{/categories}">Categories</a>
         </li>
@@ -35,6 +37,12 @@
         </li>
         <li class="nav-item" th:if="${#authorization.expression('!hasRole(''ROLE_USER'')')}">
           <a class="nav-link" th:href="@{/users/new}">Add</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/frigos}">Frigos</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/frigos/new}">Add</a>
         </li>
       </ul>
     </div>

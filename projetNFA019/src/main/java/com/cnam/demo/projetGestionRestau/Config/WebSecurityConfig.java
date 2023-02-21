@@ -60,24 +60,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .defaultSuccessUrl("/accueil")
                 .permitAll()
                 .and()
-                .logout().logoutSuccessUrl("/").permitAll();
+                .logout().logoutSuccessUrl("/login").permitAll();
     }
-//    @Override
-//    protected void configure(HttpSecurity http) throws Exception {
-//        http.authorizeRequests()
-//                .antMatchers("/accueil").hasRole("ADMIN")
-//                .antMatchers("/user").hasRole("USER")
-//                //.antMatchers("/**/**").authenticated()
-//                .anyRequest().permitAll()
-//                .and()
-//                .formLogin()
-//                .usernameParameter("email")
-//                .defaultSuccessUrl("/accueil")
-//                .permitAll()
-//                .and()
-//                .logout().logoutSuccessUrl("/").permitAll();
-//    }
-
-    //.loginPage("/login")
-    //.loginProcessingUrl("/login")
 }

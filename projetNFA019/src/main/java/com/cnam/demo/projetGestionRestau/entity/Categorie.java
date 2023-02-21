@@ -10,7 +10,7 @@ public class Categorie implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Integer idCategorie;
-  @Column(length = 128, nullable = false)
+  @Column(name = "nomCategorie",length = 128, nullable = false)
   private String nomCategorie;
   @Column(length = 256)
   private String description;
