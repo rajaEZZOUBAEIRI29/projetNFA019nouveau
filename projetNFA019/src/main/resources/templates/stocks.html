@@ -43,11 +43,11 @@
       <thead class="thead-light">
       <tr>
         <th scope="col">id Stock</th>
+        <th scope="col">Produit</th>
         <th scope="col">Login</th>
         <th scope="col"> Date Utilisation</th>
         <th scope="col"> Date Expiration</th>
         <th scope="col">Statut </th>
-        <th scope="col">Produit</th>
         <th scope="col">Actions</th>
       </tr>
       </thead>
@@ -56,14 +56,14 @@
       <tr th:each="stock:${stocks}" th:class="${(stock.dateExpiration.before(new java.util.Date())) ? 'expired' : ''}">
 <!--      <tr th:each="stock:${stocks}" >-->
         <th scope="row">[[${stock.idStock}]]</th>
+        <td>[[${stock.produit.nomProduit}]]</td>
         <td>[[${stock.user.email}]]</th>
         <td>[[${stock.dateUtilisation}]]</td>
         <td>[[${stock.dateExpiration}]]</td>
         <td>[[${stock.statut}]]</td>
-        <td>[[${stock.produit.nomProduit}]]</td>
         <td>
-          <a th:href="@{'/stock/'+ ${stock.idStock}}" title="Edit this Product " class="fa-regular fa-pen-to-square icon-dark"></a>
-          &nbsp;
+          <a th:href="@{'/stock/'+ ${stock.idStock}}" title="Mettre à jour le statut" class="fa fa-refresh icon-dark"></a>
+          <a th:href="@{'/stock/edit/'+ ${stock.idStock}}" title="Edit this produit stock" class="fa-regular fa-pen-to-square icon-dark"></a>
           <a th:href="@{'/stock/delete/'+ ${stock.idStock}}" th:stockTitle="${stock.produit.nomProduit}" id="btnDelete" title="Delete this Product" class="fa-regular fa-trash-can icon-dark btn-delete"></a>
         </td>
       </tr>

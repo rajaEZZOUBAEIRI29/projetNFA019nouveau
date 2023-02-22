@@ -111,9 +111,58 @@ public class StockController {
 
         return "redirect:/stocks";
     }
+    @GetMapping("/stock/edit/{id}")
+    public String editStock(@PathVariable("id") Integer id,
+                                     @RequestParam(name = "typeAction", required = false) String typeAction,
+                                     Model model,
+                                     RedirectAttributes redirectAttributes) {
+        try {
+            Stock stock = stockRepository.findById(id).orElse(null);
+            Produit produit = null;
+            if (stock != null) {
+                produit = stock.getProduit();
+            }
+            if (produit == null) {
+                redirectAttributes.addFlashAttribute("message", "Produit avec l'ID " + id + " non trouvé");
+                return "redirect:/stocks";
+            }
+            Calendar cal = Calendar.getInstance();
+            stock.setDateUtilisation(new Date());
+            cal.setTime(stock.getDateUtilisation());
+            cal.add(Calendar.DATE, (int) produit.getDureeConservation());
+            stock.setDateExpiration(cal.getTime());
+
+            List<Produit> produits = produitRepository.findAll();
+
+
+                stock.setStatut(stock.getStatut());
+                stockRepository.save(stock);
+
+                // créer un objet StockHistorique pour enregistrer l'action
+                StockHistorique stockHistorique = new StockHistorique();
+                stockHistorique.setDateAction(new Date());
+                stockHistorique.setTypeAction(typeAction);
+                stockHistorique.setStatut(stock.getStatut());
+                stockHistorique.setTypeAction("editer");
+                stockHistorique.setStock(stock);
+
+                // sauvegarder l'historique dans la base de données
+                stockHistoriqueRepository.save(stockHistorique);
+
+                model.addAttribute("stock", stock);
+                model.addAttribute("produits", produits);
+                model.addAttribute("pageNomStock", "Edit produit (ID: " + id + ")");
+
+            return "stock_edit";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("message", e.getMessage());
+
+        }
+        return "redirect:/stocks";
+    }
 
 @GetMapping("/stock/{id}")
-public String editStock(@PathVariable("id") Integer id,
+public String refreshStatutStock(@PathVariable("id") Integer id,
                           @RequestParam(name = "typeAction", required = false) String typeAction,
                           Model model,
                           RedirectAttributes redirectAttributes) {
@@ -123,12 +172,10 @@ public String editStock(@PathVariable("id") Integer id,
         if (stock != null) {
             produit = stock.getProduit();
         }
-
         if (produit == null) {
             redirectAttributes.addFlashAttribute("message", "Produit avec l'ID " + id + " non trouvé");
             return "redirect:/stocks";
         }
-
         Calendar cal = Calendar.getInstance();
         stock.setDateUtilisation(new Date());
         cal.setTime(stock.getDateUtilisation());
@@ -146,7 +193,7 @@ public String editStock(@PathVariable("id") Integer id,
             stockHistorique.setDateAction(new Date());
             stockHistorique.setTypeAction(typeAction);
             stockHistorique.setStatut(stock.getStatut());
-            stockHistorique.setTypeAction("editer");
+            stockHistorique.setTypeAction("changer statut stock");
             stockHistorique.setStock(stock);
 
             // sauvegarder l'historique dans la base de données
@@ -155,15 +202,15 @@ public String editStock(@PathVariable("id") Integer id,
 
             return "redirect:/stocks";
         } else {
-            //stock.setStatut(Statut.CONSOMME);
-            //stockRepository.save(stock);
+            stock.setStatut(Statut.CONSOMME);
+            stockRepository.save(stock);
 
             // créer un objet StockHistorique pour enregistrer l'action
             StockHistorique stockHistorique = new StockHistorique();
             stockHistorique.setDateAction(new Date());
             stockHistorique.setTypeAction(typeAction);
             stockHistorique.setStatut(stock.getStatut());
-            stockHistorique.setTypeAction("editer");
+            stockHistorique.setTypeAction("changer statut stock");
             stockHistorique.setStock(stock);
 
             // sauvegarder l'historique dans la base de données
@@ -171,8 +218,8 @@ public String editStock(@PathVariable("id") Integer id,
 
             model.addAttribute("stock", stock);
             model.addAttribute("produits", produits);
-            model.addAttribute("pageNomStock", "Edit produit (ID: " + id + ")");
-            return "stock_edit";
+            //model.addAttribute("pageNomStock", "Edit produit (ID: " + id + ")");
+            return "redirect:/stocks";
     }
 
     } catch (Exception e) {

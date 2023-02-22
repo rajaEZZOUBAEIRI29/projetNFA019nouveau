@@ -28,13 +28,14 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-sm-3 col-form-label" for="produit">Produit De Reference:</label>
+                    <label class="col-sm-3 col-form-label">Nom de produit :</label>
                     <div class="col-sm-9">
                         <select type="reset" th:object="${produit}" name="idProduit" required minlength="2" maxlength="128" class="form-control"  id="produit" />
                         <option th:each="produit : ${produits}" th:value="${produit.idProduit}" th:text="${produit.nomProduit}"></option>
                         </select>
                     </div>
                 </div>
+
                 <div class="text-center">
                     <input type="submit" value="Save" class="btn btn-primary btn-sm mr-2" />
                     <input type="button" value="Cancel" id="btnCancel" class="btn btn-secondary btn-sm" />

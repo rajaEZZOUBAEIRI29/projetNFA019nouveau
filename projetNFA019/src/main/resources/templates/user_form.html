@@ -42,12 +42,14 @@
            <input type="text" th:field="*{prenom}" minlength="2" maxlength="256" class="form-control"id="prenom" />
         </div>
       </div>
-      <div class="form-group row">
+        <div class="form-group row">
           <label class="col-sm-3 col-form-label" for="role">Role</label>
-        <select th:field="*{role}" th:required="true"  id="role">
-          <option th:each="role : ${T(com.cnam.demo.projetGestionRestau.entity.Role).values()}" th:value="${role}" th:text="${role}"></option>
-        </select>
-      </div>
+          <div class="col-sm-9">
+            <select th:field="*{role}" th:required="true"  id="role" class="form-control mt-2">
+              <option th:each="role : ${T(com.cnam.demo.projetGestionRestau.entity.Role).values()}" th:value="${role}" th:text="${role}"></option>
+            </select>
+          </div>
+        </div>
       <div class="text-center">
         <input type="submit" value="Save" class="btn btn-primary btn-sm mr-2" />
         <input type="button" value="Cancel" id="btnCancel" class="btn btn-secondary btn-sm" />
