@@ -1,32 +1,40 @@
 package com.cnam.demo.projetGestionRestau.entity;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
+@Table(name = "temperatures")
 public class Temperature {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer idTemperature;
     @Column(name = "tempMatin")
-    private double TemperatureMatin;
+    private float temperatureMatin;
     @Column(name = "tempSoir")
-    private double TemperatureSoir;
+    private float temperatureSoir;
     @ManyToOne
-    @JoinColumn(name="idFrogo")
+    @JoinColumn(name="idFrigo")
     private Frigo frigo;
 
     @ManyToOne
     @JoinColumn(name="idUser")
     private User user;
 
+    @OneToMany(mappedBy = "temperature")
+    private List<TempHistorique> tempHistoriques= new ArrayList<>();
+
     public Temperature() {
     }
 
-    public Temperature(double temperatureMatin, double temperatureSoir, Frigo frigo, User user) {
-        TemperatureMatin = temperatureMatin;
-        TemperatureSoir = temperatureSoir;
+    public Temperature(float temperatureMatin, float temperatureSoir,
+                       Frigo frigo, User user, List<TempHistorique> tempHistoriques) {
+        this.temperatureMatin = temperatureMatin;
+        this.temperatureSoir = temperatureSoir;
         this.frigo = frigo;
         this.user = user;
+        this.tempHistoriques = tempHistoriques;
     }
 
     public Integer getIdTemperature() {
@@ -37,20 +45,20 @@ public class Temperature {
         this.idTemperature = idTemperature;
     }
 
-    public double getTemperatureMatin() {
-        return TemperatureMatin;
+    public float getTemperatureMatin() {
+        return temperatureMatin;
     }
 
-    public void setTemperatureMatin(double temperatureMatin) {
-        TemperatureMatin = temperatureMatin;
+    public void setTemperatureMatin(float temperatureMatin) {
+        this.temperatureMatin = temperatureMatin;
     }
 
-    public double getTemperatureSoir() {
-        return TemperatureSoir;
+    public float getTemperatureSoir() {
+        return temperatureSoir;
     }
 
-    public void setTemperatureSoir(double temperatureSoir) {
-        TemperatureSoir = temperatureSoir;
+    public void setTemperatureSoir(float temperatureSoir) {
+        this.temperatureSoir = temperatureSoir;
     }
 
     public Frigo getFrigo() {
@@ -68,14 +76,25 @@ public class Temperature {
     public void setUser(User user) {
         this.user = user;
     }
+
+    public List<TempHistorique> getTempHistoriques() {
+        return tempHistoriques;
+    }
+
+    public void setTempHistoriques(List<TempHistorique> tempHistoriques) {
+        this.tempHistoriques = tempHistoriques;
+    }
+
     @Override
     public String toString() {
         return "Temperature{" +
                 "idTemperature=" + idTemperature +
-                ", TemperatureMatin=" + TemperatureMatin +
-                ", TemperatureSoir=" + TemperatureSoir +
+                ", temperatureMatin=" + temperatureMatin +
+                ", temperatureSoir=" + temperatureSoir +
                 ", frigo=" + frigo +
                 ", user=" + user +
+                ", tempHistoriques=" + tempHistoriques +
                 '}';
     }
 }
+

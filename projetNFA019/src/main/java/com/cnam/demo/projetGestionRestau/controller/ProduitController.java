@@ -22,7 +22,7 @@ public class ProduitController {
     private ProduitRepository produitRepository;
 
     @GetMapping("/produits")
-    public String getAllProduit(Model model, @Param("keyword") String keyword) {
+    public String getAllProduits(Model model, @Param("keyword") String keyword) {
         try {
 
             List<Produit> produits = new ArrayList<>();

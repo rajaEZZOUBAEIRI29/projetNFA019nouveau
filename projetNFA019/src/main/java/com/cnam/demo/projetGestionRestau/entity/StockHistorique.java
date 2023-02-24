@@ -1,7 +1,5 @@
 package com.cnam.demo.projetGestionRestau.entity;
 
-import org.hibernate.annotations.Cascade;
-
 import javax.persistence.*;
 import java.util.Date;
 

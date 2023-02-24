@@ -3,6 +3,7 @@ package com.cnam.demo.projetGestionRestau.entity;
 import javax.persistence.*;
 import java.util.List;
 @Entity
+@Table(name = "frigos")
 public class Frigo {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

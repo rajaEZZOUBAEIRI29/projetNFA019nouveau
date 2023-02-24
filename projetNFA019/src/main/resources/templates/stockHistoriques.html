@@ -16,13 +16,6 @@
 <div th:replace="fragments/header :: header"></div>
 <div class="container-fluid" style="max-width: 900px; margin: 0 auto;">
     <h2 class="text-center">Historiques Stock</h2>
-    <div th:if="${message != null}" class="alert alert-success alert-dismissible fade show text-center message"
-         role="alert">
-        [[${message}]]
-        <button type="button" class="close btn-sm" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
     <div class="my-3">
         <form th:action="@{/stockHistoriques}">
             <table class="table table-hover table-responsive-xl">

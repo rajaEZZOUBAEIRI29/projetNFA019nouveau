@@ -31,7 +31,7 @@ public class Stock {
     private User user;
 
     @OneToMany(mappedBy = "stock", cascade = CascadeType.REMOVE)
-    private List<StockHistorique> historiques= new ArrayList<>();;
+    private List<StockHistorique> historiques= new ArrayList<>();
 
     public Stock() {
     }

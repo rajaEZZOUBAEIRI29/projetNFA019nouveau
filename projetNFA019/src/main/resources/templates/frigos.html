@@ -47,7 +47,7 @@
         <th scope="col">Nom frigo</th>
         <th scope="col">Temperature Min Autorise </th>
         <th scope="col">Temperature Max Autorise </th>
-        <th scope="col" >Actions</th>
+        <th scope="col" th:if="${#authorization.expression('!hasRole(''ROLE_USER'')')}">Actions</th>
       </tr>
       </thead>
       <tbody>
@@ -56,7 +56,7 @@
         <td>[[${frigo.nomFrigo}]]</td>
         <td>[[${frigo.temperatureMinAutorise}]]</td>
         <td>[[${frigo.temperatureMaxAutorise}]]</td>
-        <td >
+        <td th:if="${#authorization.expression('!hasRole(''ROLE_USER'')')}">
           <a th:href="@{'/frigos/'+ ${frigo.idFrigo}}" title="Edit this Frigo" class="fa-regular fa-pen-to-square icon-dark"></a>
           &nbsp;
           <a th:href="@{'/frigos/delete/'+ ${frigo.idFrigo}}" th:categorieTitle="${frigo.nomFrigo}" id="btnDelete"

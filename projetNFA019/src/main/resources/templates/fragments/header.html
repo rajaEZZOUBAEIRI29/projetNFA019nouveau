@@ -41,8 +41,14 @@
         <li class="nav-item">
           <a class="nav-link" th:href="@{/frigos}">Frigos</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" th:if="${#authorization.expression('!hasRole(''ROLE_USER'')')}">
           <a class="nav-link" th:href="@{/frigos/new}">Add</a>
+        </li>
+        <li class="nav-item" >
+          <a class="nav-link" th:href="@{/temperatures}">Temperatures</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/temperatures/new}">Add</a>
         </li>
       </ul>
     </div>

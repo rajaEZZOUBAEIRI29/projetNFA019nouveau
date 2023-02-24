@@ -1,7 +1,6 @@
 package com.cnam.demo.projetGestionRestau.Config;
 
 import com.cnam.demo.projetGestionRestau.Service.CustomUserDetailsService;
-import com.cnam.demo.projetGestionRestau.entity.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
